@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class provides the services of: <br/>
@@ -42,7 +44,10 @@ public class LanguageCodeConverter {
             iterator.next(); // skip the first line
             while (iterator.hasNext()) {
                 String line = iterator.next();
-                // TODO Task A: use line to populate the instance variables
+                var cn = sanitizeCountryName(line);
+                var cc = sanitizeCountryCode(line);
+                languageCodeToLanguage.put(cc, cn);
+                languageToLanguageCode.put(cn, cc);
             }
 
         } catch (IOException | URISyntaxException ex) {
@@ -68,6 +73,25 @@ public class LanguageCodeConverter {
     public String fromLanguage(String language) {
         // TODO Task A: update this code to use the correct instance variable to return the appropriate value
         return language;
+    }
+
+    public String sanitizeCountryName(String line) {
+        Pattern r = Pattern.compile("^([\\w() ]+),?.*\\n?$");
+        Matcher m = r.matcher(line);
+
+        if(m.find()) {
+            return m.group(1);
+        }
+        else return "";
+    }
+
+    public String sanitizeCountryCode(String line) {
+        Pattern r = Pattern.compile("([\\w-]*)\\n?$");
+        Matcher m = r.matcher(line);
+
+        if (m.find()) {
+            return m.group(1);
+        } else return "";
     }
 
     /**
